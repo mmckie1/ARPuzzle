@@ -1,19 +1,46 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title> Multi Markers AR</title>
-    <meta name="description" content="Multi Markers AR - Playing the Archive - CASA UCL">
-	<script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-	<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>AR.js and A-Frame Sliding Puzzle</title>
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<script src="js/build/aframe.min.js"></script>
+	<script src="js/build/aframe-ar.js"></script>
+</head>
 
-	  <script src="js/multiMarkersName.js"></script>
-	</head>
-	<body>
-		<a-scene markers_start></a-scene>
-		<a-entity camera></a-entity>
-		<!-- <a-scene markers_start vr-mode-ui="enabled: false" color-space="sRGB" renderer="gammaOutput: true"
-	  embedded arjs='debugUIEnabled: false; sourceType: webcam; patternRatio: 0.85; trackingMethod: best;'>
-	    <a-entity camera></a-entity>
-	</a-scene> -->
-	</body>
-	</html>
+<body>
+	<div id="container">
+		<h1>AR.js and A-Frame Sliding Puzzle</h1>
+		<!-- Instructions -->
+		<p> The objective of the game is to take a picture of anything. That picture will then be shuffled and imposed on the real world barcodes. The user will then have to rearrange the real world tiles into the picture taken. </p>
+		<div>
+			<button id="takePhoto">Take Photo</button>
+			<div class="select">
+				<label for="videoSource">Video Source</label><select id="videoSource"></select>
+			</div>
+			<input type="range" class="hidden" id="zoom" step="20">
+		</div>
+		<!-- Take Photo code -->
+		<video autoplay playsinline class="hidden"></video>
+		<img>
+		<canvas class="hidden"></canvas>
+
+
+		<!-- AR.js code -->
+		<!-- <a-scene embedded arjs='trackingMethod: best; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'>
+			<a-marker type='barcode' value='1'></a-marker>
+			<a-marker type='barcode' value='2'></a-marker>
+			<a-marker type='barcode' value='3'></a-marker>
+			<a-marker type='barcode' value='5'></a-marker>
+			<a-marker type='barcode' value='6'></a-marker>
+			<a-marker type='barcode' value='7'></a-marker>
+			<a-marker type='barcode' value='9'></a-marker>
+			<a-marker type='barcode' value='10'></a-marker>
+			<a-marker type='barcode' value='11'></a-marker>
+			<a-marker-camera preset='hiro'></a-marker-camera>
+		</a-scene> -->
+	</div>
+	<script type="text/javascript" src="js/script.js"></script>
+</body>
+</html>
