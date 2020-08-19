@@ -1,21 +1,37 @@
+'use strict';
 
-//video variables
+// This code is adapted from
+// https://cdn.rawgit.com/Miguelao/demos/master/imagecapture.html
+
+// window.isSecureContext could be used for Chrome
+var isSecureOrigin = location.protocol === 'https:' ||
+location.host === 'localhost';
+if (!isSecureOrigin) {
+  alert('getUserMedia() must be run from a secure origin: HTTPS or localhost.' +
+    '\n\nChanging protocol to HTTPS');
+  location.protocol = 'HTTPS';
+}
+
 var constraints;
 var imageCapture;
 var mediaStream;
 
+var grabFrameButton = document.querySelector('button#grabFrame');
 var takePhotoButton = document.querySelector('button#takePhoto');
-var video = document.querySelector('video');
-var videoSelect = document.querySelector('select#video');
 
+var canvas = document.querySelector('canvas');
+var img = document.querySelector('img');
+var video = document.querySelector('video');
+var videoSelect = document.querySelector('select#videoSource');
+var zoomInput = document.querySelector('input#zoom');
+
+grabFrameButton.onclick = grabFrame;
 takePhotoButton.onclick = takePhoto;
 videoSelect.onchange = getStream;
+zoomInput.oninput = setZoom;
 
-
-//Puzzle Variables 
-
-//Get a list of available media input (and ouput) devices 
-//then get a MediaStream for the currently selected input device 
+// Get a list of available media input (and output) devices
+// then get a MediaStream for the currently selected input device
 navigator.mediaDevices.enumerateDevices()
   .then(gotDevices)
   .catch(error => {
@@ -23,7 +39,7 @@ navigator.mediaDevices.enumerateDevices()
   })
   .then(getStream);
 
-  // From the list of media devices available, set up the camera source <select>,
+// From the list of media devices available, set up the camera source <select>,
 // then get a video stream from the default camera source.
 function gotDevices(deviceInfos) {
   for (var i = 0; i !== deviceInfos.length; ++i) {
@@ -64,13 +80,28 @@ function gotStream(stream) {
   video.srcObject = stream;
   video.classList.remove('hidden');
   imageCapture = new ImageCapture(stream.getVideoTracks()[0]);
-  //getCapabilities();
+  getCapabilities();
+}
+
+// Get the PhotoCapabilities for the currently selected camera source.
+function getCapabilities() {
+  imageCapture.getPhotoCapabilities().then(function(capabilities) {
+    console.log('Camera capabilities:', capabilities);
+    if (capabilities.zoom.max > 0) {
+      zoomInput.min = capabilities.zoom.min;
+      zoomInput.max = capabilities.zoom.max;
+      zoomInput.value = capabilities.zoom.current;
+      zoomInput.classList.remove('hidden');
+    }
+  }).catch(function(error) {
+    console.log('getCapabilities() error: ', error);
+  });
 }
 
 // Get an ImageBitmap from the currently selected camera source and
 // display this with a canvas element.
-function takePhoto() {
-  imageCapture.takePhoto().then(function(imageBitmap) {
+function grabFrame() {
+  imageCapture.grabFrame().then(function(imageBitmap) {
     console.log('Grabbed frame:', imageBitmap);
     canvas.width = imageBitmap.width;
     canvas.height = imageBitmap.height;
@@ -78,5 +109,23 @@ function takePhoto() {
     canvas.classList.remove('hidden');
   }).catch(function(error) {
     console.log('grabFrame() error: ', error);
+  });
+}
+
+function setZoom() {
+  imageCapture.setOptions({
+    zoom: zoomInput.value
+  });
+}
+
+// Get a Blob from the currently selected camera source and
+// display this with an img element.
+function takePhoto() {
+  imageCapture.takePhoto().then(function(blob) {
+    console.log('Took photo:', blob);
+    img.classList.remove('hidden');
+    img.src = URL.createObjectURL(blob);
+  }).catch(function(error) {
+    console.log('takePhoto() error: ', error);
   });
 }
