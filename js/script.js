@@ -13,7 +13,8 @@ var videoSelect = document.querySelector('select#video');
 
 // takePhotoButton.onclick = takePhoto;
 takePhotoButton.addEventListener(`click`, takePhoto);
-videoSelect.onchange = getStream;
+videoSelect.addEventListener(`change`, getStream);
+// videoSelect.onchange = getStream;
 
 
 //Puzzle Variables 
